@@ -1,73 +1,68 @@
 #include "sort.h"
-
 /**
-* findmax - Finds the maximum value in an array
-* @array: array to find max value of
-* @size: Size of array
-* Return: Largest value
-*/
-
-int findmax(int *array, size_t size)
+ * max_val - gets max value from array
+ * @array: pointer to array
+ * @size: size of the array
+ * Return: max value from array
+ */
+int max_val(int *array, size_t size)
 {
-	int i, max = 0;
+	int max = array[0];
+	size_t i;
 
-	for (i = 0; i < (int)size; i++)
+	for (i = 0; i < size; i++)
 	{
-		if (max < array[i])
+		if (array[i] > max)
 			max = array[i];
 	}
 	return (max);
 }
-
 /**
-* radix_sort - Sorts an array using radix sort algo
-* @array: Array to sort
-* @size: size of array
-*/
-
+ * radix_sort - sorts an array of integers is ASC
+ * order implementing Radix Sort algorithm
+ * @array: pointer to array
+ * @size: size of the array
+ */
 void radix_sort(int *array, size_t size)
 {
-	int m, pos, *out, *ca;
+	int *new_arr;
+	int i, max, e = 1;
+	int tam = size;
 
-	if (array == NULL || size < 2)
+	if (!array || size < 2)
 		return;
-	m = findmax(array, size);
-	out = malloc(sizeof(int) * (int)size);
-	ca = malloc(sizeof(int) * (10));
-	if (ca == NULL || out == NULL)
-		return;
-	for (pos = 1; m / pos > 0; pos *= 10)
-		counting_sort_r(array, size, pos, out, ca), print_array(array, size);
-	free(out);
-	free(ca);
-}
 
-/**
-* counting_sort_r - sorts array using counting algorithm
-* @array: Array to sort
-* @size: Size of array
-* @pos: Digit position value
-* @out: Temp output array
-* @ca: Count array
-*/
+	max = max_val(array, size);
 
-void counting_sort_r(int *array, size_t size, int pos, int *out, int *ca)
-{
-	int i;
-
-	if (array == NULL || size < 2)
-		return;
-	for (i = 0; i < 10; i++)
-		ca[i] = 0;
-	for (i = 0; i < (int)size; i++)
-		ca[((array[i] / pos) % 10)] += 1;
-	for (i = 0; i < 10; i++)
-		ca[i] += ca[i - 1];
-	for (i = size - 1; i >= 0; i--)
+	new_arr = malloc(sizeof(int) * size);
+	while (max / e > 0)
 	{
-		out[ca[((array[i] / pos) % 10)] - 1] = array[i];
-		ca[((array[i] / pos) % 10)] -= 1;
+		int brews[20] = {0};
+
+		i = 0;
+
+		while (i < tam)
+		{
+			brews[(array[i] / e) % 10]++;
+			i++;
+		}
+
+		if (brews != NULL)
+		{
+			for (i = 1; i < 10; i++)
+				brews[i] += brews[i - 1];
+
+			for (i = tam - 1; i >= 0; i--)
+			{
+				new_arr[brews[(array[i] / e) % 10] - 1] = array[i];
+				brews[(array[i] / e) % 10]--;
+			}
+
+			for (i = 0; i < tam; i++)
+				array[i] = new_arr[i];
+		}
+		e *= 10;
+		print_array(array, size);
 	}
-	for (i = 0; i < (int)size; i++)
-		array[i] = out[i];
+	free(new_arr);
 }

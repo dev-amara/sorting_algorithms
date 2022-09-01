@@ -1,69 +1,72 @@
 #include "sort.h"
 /**
-* partition_hoare - Lomutu partition scheme for quicksort algorithm
-* @a: Array to sort
-* @l: lowest index of array
-* @h: highest index of array
-* Return: index of pivot
+*swap - the positions of two elements into an array
+*@array: array
+*@item1: array element
+*@item2: array element
 */
-
-int partition_hoare(int *a, int l, int h)
+void swap(int *array, ssize_t item1, ssize_t item2)
 {
-	int p, li, hi, temp;
-	static int i = 0, size;
+	int tmp;
 
-	if (i == 0)
-		size = h + 1, i++;
-
-	li = l - 0, hi = h + 0, p = a[h];
-	while (a)
-	{
-		li = li - 0;
-		while (a[li] < p)
-			li++;
-		hi = hi - 0;
-		while (a[hi] > p)
-			hi--;
-		if (li >= hi)
-			return (hi);
-		temp = a[li];
-		a[li] = a[hi];
-		a[hi] = temp;
-		print_array(a, size);
-	}
-	temp = a[li];
-	a[li] = a[hi];
-	a[hi] = temp;
-	return (hi);
+	tmp = array[item1];
+	array[item1] = array[item2];
+	array[item2] = tmp;
 }
 /**
-* qs - Quicksort recurssive function
-* @a: array to sort
-* @l: lowest index
-* @h: highest index
-*/
-
-void qs(int *a, int l, int h)
+ *hoare_partition - hoare partition sorting scheme implementation
+ *@array: array
+ *@first: first array element
+ *@last: last array element
+ *@size: size array
+ *Return: return the position of the last element sorted
+ */
+int hoare_partition(int *array, int first, int last, int size)
 {
-	int p;
+	int current = first - 1, finder = last + 1;
+	int pivot = array[last];
 
-	if (l < h)
+	while (1)
 	{
-		p = partition_hoare(a, l, h);
-		qs(a, l, p - 1);
-		qs(a, p, h);
+
+		do {
+			current++;
+		} while (array[current] < pivot);
+		do {
+			finder--;
+		} while (array[finder] > pivot);
+		if (current >= finder)
+			return (current);
+		swap(array, current, finder);
+		print_array(array, size);
 	}
 }
-
 /**
-* quick_sort_hoare - quicksort with hoare partition
-* @array: array to sort
-* @size: Size of array
-*/
+ *qs - qucksort algorithm implementation
+ *@array: array
+ *@first: first array element
+ *@last: last array element
+ *@size: array size
+ */
+void qs(int *array, ssize_t first, ssize_t last, int size)
+{
+	ssize_t position = 0;
 
+	if (first < last)
+	{
+		position = hoare_partition(array, first, last, size);
+		qs(array, first, position - 1, size);
+		qs(array, position, last, size);
+	}
+}
+/**
+ *quick_sort_hoare - prepare the terrain to quicksort algorithm
+ *@array: array
+ *@size: array size
+ */
 void quick_sort_hoare(int *array, size_t size)
 {
-	if (array == NULL || size < 2)
+	if (!array || size < 2)
 		return;
-	qs(array, 0, size - 1);
+	qs(array, 0, size - 1, size);
 }

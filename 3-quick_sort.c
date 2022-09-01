@@ -1,76 +1,78 @@
 #include "sort.h"
-
 /**
-* partition - Lomutu partition scheme for quicksort algorithm
-* @a: Array to sort
-* @l: lowest index of array
-* @h: highest index of array
-* Return: index of pivot
+*swap - the positions of two elements into an array
+*@array: array
+*@item1: array element
+*@item2: array element
 */
-
-int partition(int *a, int l, int h)
+void swap(int *array, ssize_t item1, ssize_t item2)
 {
-	int p, i, j, t;
-	static int size, k;
+	int tmp;
 
-	if (k == 0)
-		size = h + 1, k++;
-	p = a[h];
-	i = l;
-	for (j = l; j < h; j++)
+	tmp = array[item1];
+	array[item1] = array[item2];
+	array[item2] = tmp;
+}
+/**
+ *lomuto_partition - lomuto partition sorting scheme implementation
+ *@array: array
+ *@first: first array element
+ *@last: last array element
+ *@size: size array
+ *Return: return the position of the last element sorted
+ */
+int lomuto_partition(int *array, ssize_t first, ssize_t last, size_t size)
+{
+	int pivot = array[last];
+	ssize_t current = first, finder;
+
+	for (finder = first; finder < last; finder++)
 	{
-		if (a[j] <= p)
+		if (array[finder] < pivot)
 		{
-			if (i != j)
+			if (array[current] != array[finder])
 			{
-				t = a[i];
-				a[i] = a[j];
-				a[j] = t;
-				print_array(a, size);
+				swap(array, current, finder);
+				print_array(array, size);
 			}
-			i++;
+			current++;
 		}
 	}
-	if (i != h)
+	if (array[current] != array[last])
 	{
-		t = a[i];
-		a[i] = a[h];
-		a[h] = t;
-		print_array(a, size);
+		swap(array, current, last);
+		print_array(array, size);
 	}
-
-	return (i);
+	return (current);
 }
-
 /**
-* qs - Quicksort recurssive function
-* @a: array to sort
-* @l: lowest index
-* @h: highest index
-*/
-
-void qs(int *a, int l, int h)
+ *qs - qucksort algorithm implementation
+ *@array: array
+ *@first: first array element
+ *@last: last array element
+ *@size: array size
+ */
+void qs(int *array, ssize_t first, ssize_t last, int size)
 {
-	int p;
+	ssize_t position = 0;
 
-	if (l < h)
+
+	if (first < last)
 	{
-		p = partition(a, l, h);
-		qs(a, l, p - 1);
-		qs(a, p + 1, h);
+		position = lomuto_partition(array, first, last, size);
+
+		qs(array, first, position - 1, size);
+		qs(array, position + 1, last, size);
 	}
 }
-
-
 /**
-* quick_sort - sorts array using quicksort algorithm
-* @array: Array to sort
-* @size: Size of array to sort
-*/
-
+ *quick_sort - prepare the terrain to quicksort algorithm
+ *@array: array
+ *@size: array size
+ */
 void quick_sort(int *array, size_t size)
 {
-	if (array == NULL)
+	if (!array || size < 2)
 		return;
-	qs(array, 0, size - 1);
+	qs(array, 0, size - 1, size);
 }
